@@ -116,7 +116,16 @@
     //
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
-      return false; // fixme
+      var board = this.rows();
+      currRow = 0;
+      currCol = majorDiagonalColumnIndexAtFirstRow;
+      var sum = 0;
+      while(this._isInBounds(currRow, currCol)) {
+        sum += board[currRow][currCol];
+        currRow++;
+        currCol++;
+      }
+      return sum > 1;
     },
 
     // test if any major diagonals on this board contain conflicts
