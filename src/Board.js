@@ -130,7 +130,8 @@
 
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
-      return false; // fixme
+      var board = this;
+      return _.any(_.range(this.get('n')), function(i) { return board.hasMajorDiagonalConflictAt(i); });
     },
 
 
