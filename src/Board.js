@@ -105,7 +105,8 @@
 
     // test if any columns on this board contain conflicts
     hasAnyColConflicts: function() {
-      return false; // fixme
+      var board = this;
+      return _.any(_.range(this.get('n')), function(i) { return board.hasColConflictAt(i); });
     },
 
 
