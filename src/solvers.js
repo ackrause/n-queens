@@ -21,10 +21,10 @@ window.generateBoard = function(array) {
   return board;
 };
 
-window.findNRooksSolution = function(n, numSoln) {
-  numSoln = numSoln || 0;
+window.findNRooksSolutions = function(n) {
   var solutions = [];
 
+  var available = _.range(n);
   var genPermutations = function(array) {
     array = array || [];
     if (array.length === n) {
@@ -34,16 +34,22 @@ window.findNRooksSolution = function(n, numSoln) {
       }
     }
     else {
-      for (var i = 0; i < n; i++) {
-        if (!_.contains(array, i)) {
-          array.push(i);
+      _.each(available, function(value, index) {
+          array.push(value);
+          available.splice(index, 1);
           genPermutations(array);
           array.pop();
-        }
-      }
+          available.splice(index, 0, value);
+      });
     }
   };
   genPermutations();
+  return solutions;
+};
+
+window.findNRooksSolution = function(n, numSoln) {
+  numSoln = numSoln || 0;
+  var solutions = window.findNRooksSolutions(n);
 
   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solutions[numSoln].rows()));
   return solutions[numSoln].rows();
