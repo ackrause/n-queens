@@ -97,7 +97,10 @@
     //
     // test if a specific column on this board contains a conflict
     hasColConflictAt: function(colIndex) {
-      return false; // fixme
+      var rows = this.rows();
+      var col = _.pluck(rows, colIndex);
+      var sum = _.reduce(col, function(partialSum, value) { return partialSum + value; });
+      return sum > 1;
     },
 
     // test if any columns on this board contain conflicts
