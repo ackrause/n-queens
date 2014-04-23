@@ -155,7 +155,8 @@
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
-      return false; // fixme
+      var board = this;
+      return _.any(_.range(this.get('n')), function(i) { return board.hasMinorDiagonalConflictAt(i); });
     }
 
     /*--------------------  End of Helper Functions  ---------------------*/
