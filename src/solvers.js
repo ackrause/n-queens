@@ -116,26 +116,27 @@ window.countNQueensSolutions = function(n) {
     // if have placed all n queens, push it to solutions
     if (array.length === n) {
       solutionCount++;
+      return;
     }
 
     // otherwise place next queen
-    else {
-      // if can't place any more queens, return
-      if (_.all(available, function(value) { return !value; })) { return; }
-      for (var i = 0; i < available.length; i++) {
-        if (available[i]) {
-          array.push(i);
-          var newAvailable = allAvailable.slice();
-          for (var a = 0; a < array.length; a++) {
-            var left = array[a] - (array.length - a);
-            var right = array[a] + (array.length - a);
-            newAvailable[array[a]] = false;
-            if (left >= 0) { newAvailable[left] = false; }
-            if (right < n) { newAvailable[right] = false; }
-          }
-          genSolutionsCount(newAvailable, array);
-          array.pop();
+    for (var i = 0; i < available.length; i++) {
+      if (available[i]) {
+        array.push(i);
+        // create new availability array
+        var newAvailable = allAvailable.slice();
+        for (var a = 0; a < array.length; a++) {
+          var left = array[a] - (array.length - a);
+          var right = array[a] + (array.length - a);
+          // cannot place in this column
+          newAvailable[array[a]] = false;
+          // cannot place diagonally to left
+          if (left >= 0) { newAvailable[left] = false; }
+          // cannot place diagonally to right
+          if (right < n) { newAvailable[right] = false; }
         }
+        genSolutionsCount(newAvailable, array);
+        array.pop();
       }
     }
   };
