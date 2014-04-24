@@ -106,28 +106,53 @@ window.findNQueensSolution = function(n, numSoln) {
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
-  var solutionCount = 0;
-  var allAvailable = [];
-  var halfAvailable = [];
+  var solutionCount = 0; // number of solutions
+  var middleCount = 0;  // number of solutions derived from middle index
+  var middle = Math.floor(n/2); // index of middle array
+  var isOddN = n % 2 !== 0; // flag for whether we have to deal with special cases
+  var middleSolution = false; // flag for determining if solution being checked is a middle case
+  var allAvailable = []; // array of all true values
+  var halfAvailable = []; // array with half true, half false
+
+  // set up default availability arrays
   for (var i = 0; i < n; i++) {
     allAvailable[i] = true;
-    halfAvailable[i] = (n % 2 === 0) ? i < n/2 : i < Math.floor(n/2) + 1;
+    halfAvailable[i] = isOddN ? i < Math.floor(n/2)+1 : i < n/2;
   }
 
+  // helper function that builds and counts solutions based
+  // on where queens have already been placed and what columns
+  // are available for current row
   var genSolutionsCount = function(available, array) {
-    array = array || [];
+    array = array || []; // current placement of queens
 
-    // if have placed all n queens, push it to solutions
+    // if we have placed all n queens, count this as a solution
     if (array.length === n) {
-      solutionCount++;
+      // if this solution is from the middle of an odd array
+      // keep track of it seperately so it doesn't get doubled
+      if (middleSolution) {
+        middleCount++;
+      } else {
+        solutionCount++;
+      }
       return;
     }
 
-    // otherwise place next queen
+    // otherwise place the next queen
     for (var i = 0; i < available.length; i++) {
+      // if this is a spot a queen can go
       if (available[i]) {
+
+        // if we're looking at the middle column of the first row of an odd
+        // n x n board, set a flag so we can keep track of these solutions separately
+        if (isOddN && array.length === 0 && i === middle) {
+          middleSolution = true;
+        }
+
+        // put the next queen here
         array.push(i);
-        // create new availability array
+
+        // create new availability array for the next row
         var newAvailable = allAvailable.slice();
         for (var a = 0; a < array.length; a++) {
           var left = array[a] - (array.length - a);
@@ -139,15 +164,27 @@ window.countNQueensSolutions = function(n) {
           // cannot place diagonally to right
           if (right < n) { newAvailable[right] = false; }
         }
+
+        // count the valid solutions generated after this move
         genSolutionsCount(newAvailable, array);
+
+        // undo this move
         array.pop();
+
+        // undo the middleSolution flag as we're done processing the middle index
+        // of the first row
+        if (middleSolution) {
+          middleSolution = false;
+        }
       }
     }
   };
 
-  var startingAvailability = (n % 2 === 0) ? halfAvailable : allAvailable;
-  genSolutionsCount(startingAvailability);
-  if (n % 2 === 0) { solutionCount *= 2; }
+  // check only the first half of the first row, exploiting symmetry
+  genSolutionsCount(halfAvailable);
+
+  // correct for symmetry exploitation
+  solutionCount = 2 * solutionCount + middleCount;
 
   console.log('Number of solutions for ' + n + ' queens:', solutionCount);
   return solutionCount;
