@@ -13,6 +13,8 @@
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n rooks placed such that none of them can attack each other
 
+'use strict';
+
 window.generateBoard = function(array) {
   var board = new Board({n : array.length});
   for (var i = 0; i < array.length; i++) {
@@ -106,86 +108,41 @@ window.findNQueensSolution = function(n, numSoln) {
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
-  var solutionCount = 0; // number of solutions
-  var middleCount = 0;  // number of solutions derived from middle index
-  var middle = Math.floor(n/2); // index of middle array
-  var isOddN = n % 2 !== 0; // flag for whether we have to deal with special cases
-  var middleSolution = false; // flag for determining if solution being checked is a middle case
-  var allAvailable = []; // array of all true values
-  var halfAvailable = []; // array with half true, half false
+  var solutionCount = 0;
+  var allOnes = (1 << n) - 1;
 
-  // set up default availability arrays
-  for (var i = 0; i < n; i++) {
-    allAvailable[i] = true;
-    halfAvailable[i] = isOddN ? i < Math.floor(n/2)+1 : i < n/2;
-  }
-
-  // helper function that builds and counts solutions based
-  // on where queens have already been placed and what columns
-  // are available for current row
-  var genSolutionsCount = function(available, array) {
-    array = array || []; // current placement of queens
-
-    // if we have placed all n queens, count this as a solution
-    if (array.length === n) {
-      // if this solution is from the middle of an odd array
-      // keep track of it seperately so it doesn't get doubled
-      if (middleSolution) {
-        middleCount++;
-      } else {
-        solutionCount++;
-      }
-      return;
+  var recursiveCount = function(left, right, col, available) {
+    // if we've placed a queen in every row, we found a solution
+    if (col === allOnes) {
+      solutionCount++;
     }
 
-    // otherwise place the next queen
-    for (var i = 0; i < available.length; i++) {
-      // if this is a spot a queen can go
-      if (available[i]) {
+    if (available) {
+      for (var i = 0; i < n; i++) {
+        if (available & (1 << i)) {
 
-        // if we're looking at the middle column of the first row of an odd
-        // n x n board, set a flag so we can keep track of these solutions separately
-        if (isOddN && array.length === 0 && i === middle) {
-          middleSolution = true;
-        }
+          // new location
+          var newLoc = 1 << i;
 
-        // put the next queen here
-        array.push(i);
+          // put value in new col
+          var newCol = col | newLoc;
 
-        // create new availability array for the next row
-        var newAvailable = allAvailable.slice();
-        for (var a = 0; a < array.length; a++) {
-          var left = array[a] - (array.length - a);
-          var right = array[a] + (array.length - a);
-          // cannot place in this column
-          newAvailable[array[a]] = false;
-          // cannot place diagonally to left
-          if (left >= 0) { newAvailable[left] = false; }
-          // cannot place diagonally to right
-          if (right < n) { newAvailable[right] = false; }
-        }
+          // put value in left
+          var newLeft = (left | newLoc) << 1;
 
-        // count the valid solutions generated after this move
-        genSolutionsCount(newAvailable, array);
+          // put value in right
+          var newRight = (right | newLoc) >> 1;
 
-        // undo this move
-        array.pop();
+          // set up the new availability array
+          var newAvailable = (newLeft | newRight | newCol) ^ allOnes;
 
-        // undo the middleSolution flag as we're done processing the middle index
-        // of the first row
-        if (middleSolution) {
-          middleSolution = false;
+          recursiveCount(newLeft, newRight, newCol, newAvailable);
         }
       }
     }
   };
 
-  // check only the first half of the first row, exploiting symmetry
-  genSolutionsCount(halfAvailable);
+  recursiveCount(0,0,0, allOnes);
 
-  // correct for symmetry exploitation
-  solutionCount = 2 * solutionCount + middleCount;
-
-  console.log('Number of solutions for ' + n + ' queens:', solutionCount);
   return solutionCount;
 };
