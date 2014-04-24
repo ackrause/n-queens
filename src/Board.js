@@ -120,8 +120,10 @@
       var currRow = 0;
       var currCol = majorDiagonalColumnIndexAtFirstRow;
       var sum = 0;
-      while(this._isInBounds(currRow, currCol)) {
-        sum += board[currRow][currCol];
+      while(currCol < this.get('n')) {
+        if(this._isInBounds(currRow,currCol)) {
+          sum += board[currRow][currCol];
+        }
         currRow++;
         currCol++;
       }
@@ -131,7 +133,7 @@
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
       var board = this;
-      return _.any(_.range(this.get('n')), function(i) { return board.hasMajorDiagonalConflictAt(i); });
+      return _.any(_.range(1-this.get('n'), this.get('n')), function(i) { return board.hasMajorDiagonalConflictAt(i); });
     },
 
 
@@ -145,8 +147,10 @@
       var currRow = 0;
       var currCol = minorDiagonalColumnIndexAtFirstRow;
       var sum = 0;
-      while(this._isInBounds(currRow, currCol)) {
-        sum += board[currRow][currCol];
+      while(currCol >= 0) {
+        if (this._isInBounds(currRow, currCol)) {
+          sum += board[currRow][currCol];
+        }
         currRow++;
         currCol--;
       }
@@ -156,7 +160,7 @@
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
       var board = this;
-      return _.any(_.range(this.get('n')), function(i) { return board.hasMinorDiagonalConflictAt(i); });
+      return _.any(_.range(2*this.get('n')), function(i) { return board.hasMinorDiagonalConflictAt(i); });
     }
 
     /*--------------------  End of Helper Functions  ---------------------*/
