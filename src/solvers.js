@@ -122,9 +122,9 @@ window.countNQueensSolutions = function(n) {
     else {
       // if can't place any more queens, return
       if (_.all(available, function(value) { return !value; })) { return; }
-      _.each(available, function(isAvailable, index) {
-        if(isAvailable) {
-          array.push(index);
+      for (var i = 0; i < available.length; i++) {
+        if (available[i]) {
+          array.push(i);
           var newAvailable = allAvailable.slice();
           for (var a = 0; a < array.length; a++) {
             var left = array[a] - (array.length - a);
@@ -136,7 +136,7 @@ window.countNQueensSolutions = function(n) {
           genSolutionsCount(newAvailable, array);
           array.pop();
         }
-      });
+      }
     }
   };
 
