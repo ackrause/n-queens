@@ -108,7 +108,11 @@ window.findNQueensSolution = function(n, numSoln) {
 window.countNQueensSolutions = function(n) {
   var solutionCount = 0;
   var allAvailable = [];
-  for (var i = 0; i < n; i++) { allAvailable[i] = true; }
+  var halfAvailable = [];
+  for (var i = 0; i < n; i++) {
+    allAvailable[i] = true;
+    halfAvailable[i] = (n % 2 === 0) ? i < n/2 : i < Math.floor(n/2) + 1;
+  }
 
   var genSolutionsCount = function(available, array) {
     array = array || [];
@@ -141,7 +145,9 @@ window.countNQueensSolutions = function(n) {
     }
   };
 
-  genSolutionsCount(allAvailable);
+  var startingAvailability = (n % 2 === 0) ? halfAvailable : allAvailable;
+  genSolutionsCount(startingAvailability);
+  if (n % 2 === 0) { solutionCount *= 2; }
 
   console.log('Number of solutions for ' + n + ' queens:', solutionCount);
   return solutionCount;
