@@ -126,13 +126,13 @@ window.countNQueensSolutions = function(n) {
         if(isAvailable) {
           array.push(index);
           var newAvailable = allAvailable.slice();
-          _.each(array, function(value, index, array) {
-            var left = value - (array.length - index);
-            var right = value + (array.length - index);
-            newAvailable[value] = false;
+          for (var a = 0; a < array.length; a++) {
+            var left = array[a] - (array.length - a);
+            var right = array[a] + (array.length - a);
+            newAvailable[array[a]] = false;
             if (left >= 0) { newAvailable[left] = false; }
             if (right < n) { newAvailable[right] = false; }
-          });
+          }
           genSolutionsCount(newAvailable, array);
           array.pop();
         }
